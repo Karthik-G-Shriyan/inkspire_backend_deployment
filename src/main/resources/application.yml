@@ -1,0 +1,112 @@
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4o-mini
+
+  cache:
+    type: redis
+  data:
+    redis:
+      host: redis-19952.c301.ap-south-1-1.ec2.redns.redis-cloud.com
+      port: 19952
+      password: ${REDIS_PASSWORD}
+      time-to-live: 30m
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH2_CLIENT_ID}
+            client-secret: ${OAUTH2_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+  kafka:
+    bootstrap-servers: pkc-l7pr2.ap-south-1.aws.confluent.cloud:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      # group-id: weekly-sentiment-group # Replace with your actual group ID
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.unicksbyte.inkspire.kafkamodel
+    properties:
+      sasl:
+        mechanism: PLAIN
+        jaas:
+          config: >
+            org.apache.kafka.common.security.plain.PlainLoginModule required
+            username='${KAFKA_USERNAME}'
+            password='${KAFKA_PASSWORD}';
+      security:
+        protocol: SASL_SSL
+      session.timeout.ms: 45000
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_ADDRESS}
+    password: ${GMAIL_2FA_PASSWORD}  # Use an App Password if 2FA is enabled
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+
+
+  datasource:
+    hikari:
+      initialization-fail-timeout: 0      # Don't fail on startup if DB is paused
+      connection-timeout: 60000           # Wait 60s before timing out a connection request
+      maximum-pool-size: 5                # Keep small connection pool (cost-efficient)
+      connection-test-query: SELECT 1     # Validate connections before using them
+
+    url: ${SQL_DATABASE_URL}
+    username: ${SQL_DATABASE_USERNAME}
+    password: ${SQL_DATABASE_PASSWORD}
+
+  application:
+    name: inkspire
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.SQLServerDialect
+
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
+
+
+client:
+  id: ${GOOGLE_OAUTH2_CLIENT_ID}
+
+
+
+
+
+
+
+
+
+
+

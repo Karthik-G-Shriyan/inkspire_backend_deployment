@@ -54,7 +54,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         String jwtToken = jwtUtils.generateToken(userDetails);
 
         // Redirect to frontend
-        String redirectUrl = "http://localhost:5173/oauth-success" +
+        String redirectUrl = "https://inkspire-application.netlify.app/oauth-success" +
                 "?token=" + jwtToken +
                 "&publicId=" + user.getPublicId() +
                 "&userName=" + URLEncoder.encode(user.getUserName(), StandardCharsets.UTF_8) +

@@ -100,6 +100,8 @@ jwt:
 client:
   id: ${GOOGLE_OAUTH2_CLIENT_ID}
 
+server:
+  port: ${PORT:8080}
 
 
 

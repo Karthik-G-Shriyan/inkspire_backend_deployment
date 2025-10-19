@@ -113,7 +113,7 @@ public class CommentServiceImpl implements CommentService {
     // Convert CommentEntity to CommentResponse DTO
     private CommentResponse convertToResponse(CommentEntity comment) {
         return CommentResponse.builder()
-                .postId(comment.getPublicId())
+                .commentId(comment.getPublicId())
                 .postId(comment.getPost().getPublicId())
                 .writerName(comment.getUser().getUserName())
                 .writerPublicId(comment.getUser().getPublicId())

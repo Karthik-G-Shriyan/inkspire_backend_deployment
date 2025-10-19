@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
@@ -26,7 +28,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri: "https://inkspire-backend-deployment-374341519167.asia-south1.run.app/login/oauth2/code/{registrationId}"
 
   kafka:
     bootstrap-servers: pkc-l7pr2.ap-south-1.aws.confluent.cloud:9092

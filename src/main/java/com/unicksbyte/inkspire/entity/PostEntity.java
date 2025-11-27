@@ -25,6 +25,9 @@ public class PostEntity {
     @Column(nullable = false)
     private String title;
 
+    @Column(length = 220)
+    private String preview;
+
     @Column(nullable = false , columnDefinition = "VARCHAR(MAX)")
     private String content;
 

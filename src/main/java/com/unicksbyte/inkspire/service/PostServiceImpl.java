@@ -8,6 +8,7 @@ import com.unicksbyte.inkspire.entity.UnsafePostEntity;
 import com.unicksbyte.inkspire.entity.UserEntity;
 import com.unicksbyte.inkspire.exception.ResourceNotFoundException;
 import com.unicksbyte.inkspire.exception.UnauthorizedActionException;
+import com.unicksbyte.inkspire.projection.PostPreviewProjection;
 import com.unicksbyte.inkspire.repository.PostRepository;
 import com.unicksbyte.inkspire.repository.UnsafePostRepository;
 import lombok.AllArgsConstructor;
@@ -57,7 +58,7 @@ public class PostServiceImpl implements PostService {
                 .toList();
 
         // Send email
-       postNotificationService.sendNewPostNotification(loggedInUser.getUserName(), newPost.getTitle(), followerEmails);
+        postNotificationService.sendNewPostNotification(loggedInUser.getUserName(), newPost.getTitle(), followerEmails);
 
         PostResponse response =  convertToResponse(newPost);
 
@@ -66,7 +67,7 @@ public class PostServiceImpl implements PostService {
         Map<String, Object> moderationResult = contentModerationService.moderatePost(newPost.getContent());
         String status = (String) moderationResult.get("status");
 
-        // 3️⃣ If unsafe, store in UnsafePostEntity
+        // 3️ If unsafe, store in UnsafePostEntity
         if ("NOT_OK".equals(status)) {
             UnsafePostEntity unsafe = UnsafePostEntity.builder()
                     .post(newPost)
@@ -146,13 +147,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostPreviewResponse> getAllPosts(int page, int size) {
 
-        // For DB pagination (page >= 0)
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<PostEntity> postsPage = postRepository.findAll(pageable);
+        Pageable pageable = PageRequest.of(page, size);
 
-        Page<PostPreviewResponse> responsePage = postsPage.map(this::convertToPreviewResponse);
+        Page<PostPreviewProjection> projectionPage = postRepository.findAllPostPreviews(pageable);
 
-        return responsePage;
+        return projectionPage.map(this::convertProjectionToPreviewResponse);
     }
 
 
@@ -177,16 +176,16 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostPreviewResponse> searchPosts(String query, String category) {
 
-            return postRepository.searchPostsNative(query, category)
-                    .stream()
-                    .map(this::convertToPreviewResponse)
-                    .toList();
+        return postRepository.searchPostsNative(query, category)
+                .stream()
+                .map(this::convertToPreviewResponse)
+                .toList();
 
     }
 
 
     private PostEntity convertToEntity(PostRequest request ){
-       return PostEntity.builder()
+        return PostEntity.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .tags(request.getTags())
@@ -197,15 +196,27 @@ public class PostServiceImpl implements PostService {
 
     private PostResponse convertToResponse(PostEntity newPost) {
 
-       return PostResponse.builder()
+        return PostResponse.builder()
                 .publicId(newPost.getPublicId())
                 .title(newPost.getTitle())
                 .content(newPost.getContent())
                 .authorId(newPost.getUser().getPublicId())
-               .authorName(newPost.getUser().getUserName())
+                .authorName(newPost.getUser().getUserName())
                 .category(newPost.getCategory())
                 .updatedAt(newPost.getUpdatedAt())
                 .tags(newPost.getTags())
+                .build();
+    }
+    private PostPreviewResponse convertProjectionToPreviewResponse(PostPreviewProjection p) {
+        return PostPreviewResponse.builder()
+                .publicId(p.getPublicId())
+                .title(p.getTitle())
+                .preview(p.getPreview())
+                .authorId(p.getAuthorId())
+                .authorName(p.getAuthorName())
+                .category(p.getCategory())
+                .updatedAt(p.getUpdatedAt())
+                .tags(p.getTags())
                 .build();
     }
 

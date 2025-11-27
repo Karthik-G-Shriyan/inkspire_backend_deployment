@@ -1,6 +1,9 @@
 package com.unicksbyte.inkspire.repository;
 
 import com.unicksbyte.inkspire.entity.PostEntity;
+import com.unicksbyte.inkspire.projection.PostPreviewProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +21,23 @@ public interface PostRepository extends JpaRepository<PostEntity, Long> {
 
     // Find by UUID publicId
     Optional<PostEntity> findByPublicId(String publicId);
+
+
+    @Query("""
+    SELECT p.publicId AS publicId,
+           p.title AS title,
+           p.preview AS preview,
+           u.publicId AS authorId,
+           u.userName AS authorName,
+           p.category AS category,
+           p.updatedAt AS updatedAt,
+           p.tags AS tags
+    FROM PostEntity p
+    JOIN p.user u
+    ORDER BY p.createdAt DESC
+""")
+    Page<PostPreviewProjection> findAllPostPreviews(Pageable pageable);
+
 
     @Query(value = """
     SELECT * FROM posts p

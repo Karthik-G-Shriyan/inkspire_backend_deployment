@@ -103,6 +103,7 @@ public class PostServiceImpl implements PostService {
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setTags(request.getTags());
+        post.setPreview(getPreview(request.getContent()));
         post.setCategory(request.getCategory());
         post.setUpdatedAt(LocalDateTime.now());
 
@@ -189,6 +190,7 @@ public class PostServiceImpl implements PostService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .tags(request.getTags())
+                .preview(getPreview(request.getContent()))
                 .category(request.getCategory())
                 .createdAt(LocalDateTime.now())
                 .build();

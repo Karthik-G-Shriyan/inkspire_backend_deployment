@@ -12,8 +12,8 @@ spring:
     type: redis
   data:
     redis:
-      host: redis-19952.c301.ap-south-1-1.ec2.redns.redis-cloud.com
-      port: 19952
+      host: redis-10472.crce263.ap-south-1-1.ec2.cloud.redislabs.com
+      port: 10472
       password: ${REDIS_PASSWORD}
       time-to-live: 30m
 
